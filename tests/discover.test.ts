@@ -32,6 +32,16 @@ test('API requires a key when no server key is set', async () => {
   try { assert.equal((await POST(new Request('http://localhost/api/discover', { method: 'POST', body: JSON.stringify(exampleBrief) }))).status, 401); }
   finally { if (old) process.env.GEMINI_API_KEY = old; }
 });
+
+test('same-origin requests work behind Render while other origins stay blocked', async () => {
+  const previous = process.env.RENDER_EXTERNAL_URL;
+  process.env.RENDER_EXTERNAL_URL = 'https://clientscout.example';
+  try {
+    const make = (origin: string) => POST(new Request('http://localhost:10000/api/discover', {method:'POST',headers:{origin},body:'invalid JSON'}));
+    assert.equal((await make('https://clientscout.example')).status,400);
+    assert.equal((await make('https://evil.example')).status,403);
+  } finally { if(previous) process.env.RENDER_EXTERNAL_URL=previous; else delete process.env.RENDER_EXTERNAL_URL; }
+});
 test('two-pass research preserves sources and removes contacts absent from research', async () => {
   const original = globalThis.fetch; let calls = 0;
   globalThis.fetch = async (_url, init) => {

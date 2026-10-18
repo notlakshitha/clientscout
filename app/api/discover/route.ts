@@ -7,7 +7,9 @@ export const maxDuration = 120;
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 export async function POST(request: Request) {
   const origin = request.headers.get('origin');
-  if (origin && origin !== new URL(request.url).origin) return json({ error: 'Cross-origin requests are not allowed.' }, 403);
+  // Render terminates TLS at its proxy; the internal request URL can be localhost.
+  const publicOrigin = new URL(process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || request.url).origin;
+  if (origin && origin !== publicOrigin) return json({ error: 'Cross-origin requests are not allowed.' }, 403);
   let input;
   try { const body = await request.text(); if (body.length > 8000) return json({ error: 'Your brief is too long.' }, 413); input = JSON.parse(body); }
   catch { return json({ error: 'Please send a valid search brief.' }, 400); }
