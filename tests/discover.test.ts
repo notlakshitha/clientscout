@@ -57,3 +57,30 @@ test('quota failures do not leak upstream response details', async () => {
   finally { globalThis.fetch = original; }
 });
 
+
+test('listing-backed pipeline discards invented contacts and keeps Gemma review separate from facts', async () => {
+  const original = globalThis.fetch;
+  const oldSerp = process.env.SERPAPI_API_KEY; const oldGemma = process.env.GEMMA_MODEL;
+  process.env.SERPAPI_API_KEY = 'search-test'; process.env.GEMMA_MODEL = 'gemma-test';
+  let calls = 0;
+  globalThis.fetch = async (url, init) => {
+    calls++;
+    if (String(url).includes('serpapi.com')) return Response.json({ local_results: [{ title: 'Business B', address: 'Galle', phone: '+94 123456789', website: 'https://example.com', type: 'Guesthouse' }] });
+    const sent = JSON.parse(String(init?.body));
+    const profile = { name: 'Business B', sourceIds: [0], email: 'invented@example.com', phone: 'made up', website: 'https://invented.example', fit: 'Strong' };
+    let content;
+    if (String(url).includes('gemma-test')) {
+      const input = JSON.parse(sent.contents[0].parts[0].text.split('Brief and profiles: ')[1]);
+      content = JSON.stringify({ reviews: [{ id: input.prospects[0].id, fit: 'Possible', opportunity: 'Discuss direct bookings', uncertainty: 'Budget and interest are unknown', phone: 'another invented phone' }] });
+    } else content = JSON.stringify({ prospects: [profile, {name:'Hallucinated business',sourceIds:[0]}] });
+    return Response.json({ candidates: [{ content: { parts: [{text:content}] } }] });
+  };
+  try {
+    const response = await POST(new Request('http://localhost/api/discover', {method:'POST',headers:{'x-gemini-key':'test-key'},body:JSON.stringify(exampleBrief)}));
+    const data = await response.json();
+    assert.equal(response.status,200); assert.equal(calls,3); assert.equal(data.prospects.length,1);
+    assert.equal(data.prospects[0].phone,'+94 123456789'); assert.equal(data.prospects[0].email,'');
+    assert.equal(data.prospects[0].website,'https://example.com/'); assert.equal(data.prospects[0].fit,'Possible');
+    assert.ok(!JSON.stringify(data).includes('search-test')); assert.ok(data.prospects[0].contactSource.startsWith('https://www.google.com/maps/'));
+  } finally { globalThis.fetch=original; if(oldSerp) process.env.SERPAPI_API_KEY=oldSerp; else delete process.env.SERPAPI_API_KEY; if(oldGemma) process.env.GEMMA_MODEL=oldGemma; else delete process.env.GEMMA_MODEL; }
+});

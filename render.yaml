@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: clientscout
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/status
+    envVars:
+      - key: NODE_VERSION
+        value: 24.19.0
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: GEMMA_MODEL
+        value: gemma-4-26b-a4b-it
+      - key: SEARCH_DAILY_LIMIT
+        value: 20
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SERPAPI_API_KEY
+        sync: false
+
