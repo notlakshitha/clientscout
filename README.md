@@ -6,6 +6,10 @@ You can know exactly what you want to sell and still have no idea who to offer i
 
 Think websites for guesthouses in Galle, photography for cafés in Colombo, or bookkeeping for independent shops. It helps with the research before the first conversation. It doesn't promise anyone wants to buy.
 
+[Open ClientScout](https://clientscout-akrc.onrender.com) · [Explore the example workspace](https://clientscout-akrc.onrender.com/app?demo=1)
+
+![ClientScout landing page](docs/preview.png)
+
 ## Try it
 
 The landing page is at `/`. The workspace is at `/app`. Choose **Take a look first** for an example with clearly labelled fictional businesses. That works without API keys.
