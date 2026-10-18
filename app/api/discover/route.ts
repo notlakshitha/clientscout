@@ -28,7 +28,10 @@ export async function POST(request: Request) {
   const timeout = setTimeout(() => controller.abort(), 110000);
   async function generate(body: unknown, selectedModel?: string) {
     const url = selectedModel ? `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(selectedModel)}:generateContent` : endpoint;
-    const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey! }, body: JSON.stringify(body), signal: controller.signal });
+    const payload = body as { generationConfig?: Record<string, unknown> };
+    // Listing classification needs short answers, not an extended reasoning pass.
+    const thinkingConfig = (selectedModel || model).startsWith('gemini-2.5') ? { thinkingBudget: 0 } : { thinkingLevel: selectedModel?.startsWith('gemma') ? 'minimal' : 'low' };
+    const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey! }, body: JSON.stringify({ ...payload, generationConfig: { ...payload.generationConfig, thinkingConfig } }), signal: controller.signal });
     if (!response.ok) {
       if ([400, 401, 403].includes(response.status)) throw new Error('Gemini could not authorize this request. Check your API key, model access, and Search grounding billing in Google AI Studio.');
       if (response.status === 404) throw new Error('The configured Gemini model is unavailable for this key. Set GEMINI_MODEL to a supported model with Google Search grounding.');
