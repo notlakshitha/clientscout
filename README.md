@@ -12,7 +12,7 @@ Think websites for guesthouses in Galle, photography for cafés in Colombo, or b
 
 ## Try it
 
-The landing page is at `/`. The workspace is at `/app`. Choose **Take a look first** for an example with clearly labelled fictional businesses. That works without API keys.
+The landing page is at `/`. Enter your offer, audience, and location there, then review the brief in `/app` before searching. Choose **Explore an example** to try the workspace with clearly labelled fictional businesses and no API keys.
 
 For live searches:
 
@@ -51,7 +51,7 @@ A **Strong** fit means the business activity appears relevant to the offer. It s
 
 Next.js App Router, React, TypeScript, Zod, Lucide, and plain CSS. No separate backend and no database. Saved lists and the last brief live in browser storage on that device, so export anything you want to keep.
 
-The visual direction comes from the Axisform template in the supplied template collection: charcoal, orange, oversized type, and layered cards. It's rebuilt as local React components and CSS, without its animation scripts or external image dependencies.
+The original starting point was the Axisform template in the supplied template collection. The current interface uses a quieter cream and orange palette, a working search brief on the landing page, and a compact workspace with a single results list. Search options stay tucked away until needed, and business evidence and outreach open in a profile drawer.
 
 ## Deploy on Render
 
