@@ -51,7 +51,7 @@ A **Strong** fit means the business activity appears relevant to the offer. It s
 
 Next.js App Router, React, TypeScript, Zod, Lucide, and plain CSS. No separate backend and no database. Saved lists and the last brief live in browser storage on that device, so export anything you want to keep.
 
-The original starting point was the Axisform template in the supplied template collection. The current interface uses a quieter cream and orange palette, a working search brief on the landing page, and a compact workspace with a single results list. Search options stay tucked away until needed, and business evidence and outreach open in a profile drawer.
+The original starting point was the Axisform template in the supplied template collection. The current interface uses the original charcoal and vivid orange landing palette, a working search brief on the landing page, and a compact workspace with a single results list. Search options stay tucked away until needed, and business evidence and outreach open in a profile drawer.
 
 ## Deploy on Render
 
